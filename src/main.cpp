@@ -3,22 +3,15 @@
  * - [x] Sample: vector
  * - [x] ~~double > float~~
  * - [x] stdin|argv[1]
- * - [ ] SFT: complex
+ * - [x] SFT: complex
  * - [ ] unify functions (wrap)
  * - [ ] FIXME: handle 'not argv[1] nor stdin'
  */
 #include <vector>
-#include <algorithm>
-#include <cmath>
 #include <complex>
 #include <cstdlib>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <time.h>
 
 using namespace std;
 #define PI numbers::pi
@@ -49,12 +42,12 @@ int main(int argc, char *argv[]) {
   else {
       infile.open(argv[1], ios::in);
       if (!infile.is_open()) {
-          cerr << "Can't open hash file: " << argv[1] << endl;
+          cerr << "Can't open input file: " << argv[1] << endl;
           exit(EXIT_FAILURE);
       }
       infile_ptr = &infile;
   }
-  // 01. Читаем исходные отсчёты
+  // 01. Read samples
   while (!getline(*infile_ptr, s).eof()) {
     Samples.push_back(atof(s.c_str()));
     countS++;
@@ -63,16 +56,14 @@ int main(int argc, char *argv[]) {
       cerr << "No input data" << endl;
       exit(EXIT_FAILURE);
   }
-  // 02. Расчет среднего значения
-  auto OutMean = MeanCount(Samples, Nwind);
-  // 03. Расчёт действующего значения
-  auto OutRMS = RMSCount(Samples, Nwind);
-  // 04. Фильтр Фурье
-  auto OutSFT1 = Fourier(Samples, Nwind, 1);
+  // 02. Calc required
+  auto OutMean = MeanCount(Samples, Nwind);  // 02. Расчет среднего значения
+  auto OutRMS = RMSCount(Samples, Nwind);    // 03. Расчёт действующего значения
+  auto OutSFT1 = Fourier(Samples, Nwind, 1); // 04. Фильтр Фурье
   auto OutSFT2 = Fourier(Samples, Nwind, 2);
   auto OutSFT3 = Fourier(Samples, Nwind, 3);
   auto OutSFT5 = Fourier(Samples, Nwind, 5);
-
+  // 03. Print results
   printf("%s", HEAD_MATLAB);
   for (int n = 0; n < countS; n++)
     printf(FMT_MATLAB, n + 1, -500.0 + n * dt, Samples[n], OutMean[n], OutRMS[n],

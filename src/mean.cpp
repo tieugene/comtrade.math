@@ -4,8 +4,6 @@ double *MeanCount(std::vector<double> &Samples, int Nwind) {
   /// INPUT:
   // Samples - указатель на входной массив отсчётов входного сигнала;
   // Nwind - длина окна наблюдения
-  // Len - длина входного массива
-  // Out - указатель на выходной массив
   double *Yind = new double[Nwind];
   int indStart = 0; // индекс первого отсчёта в исходном сигнале (не в окне)
   int Nsamp = 0; // число заполненных отсчётов в текущем окне
