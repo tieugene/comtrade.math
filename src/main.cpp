@@ -1,11 +1,12 @@
 /* TODO:
  * - [x] return new
- * - [ ] Sample: vector
+ * - [x] Sample: vector
  * - [ ] double > float
  * - [ ] SFT: complex
  * - [ ] stdin|argv[1]
  * - [ ] unify functions (wrap)
  */
+#include <vector>
 #include <algorithm>
 #include <cmath>
 #include <complex.h>
@@ -25,13 +26,13 @@ char HEAD_MATLAB[] =
 char FMT_MATLAB[] =
     "%10d %10.4f %10.4f %10.4f %10.4f %10.4f %20.4f %20.4f %10.4f %10.4f\n";
 
-double *MeanCount(double*, int, int);
-double *RMSCount(double*, int, int);
-int Fourier(double *Samples, int Nwind, int Len, double *OutReal, double *OutImag, int Nharm);
+double *MeanCount(vector<double>&, int);
+double *RMSCount(vector<double>&, int);
+int Fourier(vector<double>&, int Nwind, double *OutReal, double *OutImag, int Nharm);
 
 int main() {
   int leng = 1e6;
-  double *Samples = new double[leng];
+  vector<double> Samples;
   double *OutReal1 = new double[leng];
   double *OutImag1 = new double[leng];
   double *OutReal2 = new double[leng];
@@ -51,19 +52,19 @@ int main() {
   // 01. Читаем исходные отсчёты
   ifstream file("InitSamples.txt");
   while (getline(file, s)) {
-    Samples[countS] = atof(s.c_str());
+    Samples.push_back(atof(s.c_str()));
     countS++;
   }
   file.close();
   // 02. Расчет среднего значения
-  double *OutMean = MeanCount(Samples, Nwind, countS);
+  auto OutMean = MeanCount(Samples, Nwind);
   // 03. Расчёт действующего значения
-  double *OutRMS = RMSCount(Samples, Nwind, countS);
+  auto OutRMS = RMSCount(Samples, Nwind);
   // 04. Фильтр Фурье
-  out = Fourier(Samples, Nwind, countS, OutReal1, OutImag1, 1);
-  out = Fourier(Samples, Nwind, countS, OutReal2, OutImag2, 2);
-  out = Fourier(Samples, Nwind, countS, OutReal3, OutImag3, 3);
-  out = Fourier(Samples, Nwind, countS, OutReal5, OutImag5, 5);
+  out = Fourier(Samples, Nwind, OutReal1, OutImag1, 1);
+  out = Fourier(Samples, Nwind, OutReal2, OutImag2, 2);
+  out = Fourier(Samples, Nwind, OutReal3, OutImag3, 3);
+  out = Fourier(Samples, Nwind, OutReal5, OutImag5, 5);
 
   printf("%s", HEAD_MATLAB);
   for (int n = 0; n < countS; n++)

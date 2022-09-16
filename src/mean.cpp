@@ -1,4 +1,6 @@
-double *MeanCount(double *Samples, int Nwind, int Len) {
+#include <vector>
+
+double *MeanCount(std::vector<double> &Samples, int Nwind) {
   /// INPUT:
   // Samples - указатель на входной массив отсчётов входного сигнала;
   // Nwind - длина окна наблюдения
@@ -10,7 +12,8 @@ double *MeanCount(double *Samples, int Nwind, int Len) {
   int indStartWind = 0; // индекс первого отсчёта, который нужно заполнять в окне наблюдения
   double sum_ = 0.0; // урна
 
-  double *Out = new double[Len];
+  auto Len = Samples.size();
+  auto Out = new double[Len];
   for (int m = 0; m < Len; m++) // для каждого отсчёта в исходном сигнале заполняем окно
   {
     indStart = m - (Nwind - 1); // индекс первого (левого) отсчёта в исходном сигнале, который нужно записать в окно наблюдения
