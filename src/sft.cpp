@@ -30,7 +30,6 @@ int Fourier(vector<double> &Samples, int Nwind, double *OutReal, double *OutImag
     indStart = m - (Nwind - 1); // индекс первого (левого) отсчёта в исходном сигнале, который нужно записать в окно наблюдения
     if (indStart < 0) // если текущий отсчёт m не вышел за Nwind отсчётов, то надо начинать с нулевого отсчёта
       indStart = 0;
-
     // число заполненных ненулевых отсчётов в окне
     if (m < Nwind - 1) // если окно ещё не заполнилось полностью
       Nsamp = m + 1;
@@ -43,24 +42,21 @@ int Fourier(vector<double> &Samples, int Nwind, double *OutReal, double *OutImag
     for (int n = 0; n < Nsamp; n++) // копирование отсчётов из сигнала в окно наблюдения
       Yind[indStartWind + n] = Samples[indStart + n];
     // ортогональные составляющие: обнуление перед каждой итерацией цикла
+    for (int n = 0; n < Nwind; n++)
+      sin_[n] = cos_[n] = 0.0;
     for (int n = 0; n < Nwind; n++) {
-      sin_[n] = 0.0;
-      cos_[n] = 0.0;
-    }
-    for (int n = 0; n < Nwind; n++) {
-      sin_[n] = sin(2 * PI * Nharm * (m + 1 + n) / Nwind); // для реальной части (определяем фазу синусоиды, а не косинусоиды)
-      cos_[n] = cos(2 * PI * Nharm * (m + 1 + n) / Nwind); // для мнимой: если бы определяли фазу косинусоиды, то было бы наоборот
+      auto arg = 2 * PI * Nharm * (m + 1 + n) / Nwind;
+      sin_[n] = sin(arg); // для реальной части (определяем фазу синусоиды, а не косинусоиды)
+      cos_[n] = cos(arg); // для мнимой: если бы определяли фазу косинусоиды, то было бы наоборот
     }
     sum_ = 0.0; // реальная часть
     for (int n = 0; n < Nwind; n++)
-      sum_ = sum_ + Yind[n] * sin_[n];
-    OutReal[m] = 2 * sum_ / Nwind;
+      sum_ += Yind[n] * sin_[n];
+    OutReal[m] = 2 * sum_ / Nwind / sqrt(2); // sqrt(2): действующее значение гармоники, а не амплитудное
     sum_ = 0.0; // мнимая часть
     for (int n = 0; n < Nwind; n++)
-      sum_ = sum_ + Yind[n] * cos_[n];
-    OutImag[m] = 2 * sum_ / Nwind;
-    OutReal[m] = OutReal[m] / sqrt(2); // действующее значение гармоники, а не амплитудное
-    OutImag[m] = OutImag[m] / sqrt(2); // действующее значение гармоники, а не амплитудное
+      sum_ += Yind[n] * cos_[n];
+    OutImag[m] = 2 * sum_ / Nwind / sqrt(2); // действующее значение гармоники, а не амплитудное
   }
   delete[] Yind;
   delete[] sin_;
