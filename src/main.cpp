@@ -20,8 +20,7 @@ char FMT_MATLAB[] =
 
 int MeanCount(double *Samples, int Nwind, int Len, double *Out);
 int RMSCount(double *Samples, int Nwind, int Len, double *Out);
-int Fourier(double *Samples, int Nwind, int Len, double *OutReal,
-            double *OutImag, int Nharm);
+int Fourier(double *Samples, int Nwind, int Len, double *OutReal, double *OutImag, int Nharm);
 
 int main() {
   int leng = 1e6;
