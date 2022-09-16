@@ -1,13 +1,14 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include <complex>
 
 using namespace std;
 #define PI numbers::pi
 
 /// Расчёт ортогональных составляющих. Примечание: определяется фаза синусоиды
 /// входного сигнала (а не косинусоиды)
-int Fourier(vector<double> &Samples, int Nwind, double *OutReal, double *OutImag, int Nharm) {
+complex<double> *Fourier(vector<double> &Samples, int Nwind, int Nharm) {
   /// INPUT:
   // Samples - указатель на входной массив отсчётов входного сигнала;
   // Nwind - длина окна наблюдения
@@ -25,6 +26,7 @@ int Fourier(vector<double> &Samples, int Nwind, double *OutReal, double *OutImag
   double sum_ = 0.0; // урна
 
   auto Len = Samples.size();
+  complex<double> *Out = new complex<double>[Len];
   for (int m = 0; m < Len; m++) // для каждого отсчёта в исходном сигнале заполняем окно
   {
     indStart = m - (Nwind - 1); // индекс первого (левого) отсчёта в исходном сигнале, который нужно записать в окно наблюдения
@@ -52,14 +54,15 @@ int Fourier(vector<double> &Samples, int Nwind, double *OutReal, double *OutImag
     sum_ = 0.0; // реальная часть
     for (int n = 0; n < Nwind; n++)
       sum_ += Yind[n] * sin_[n];
-    OutReal[m] = 2 * sum_ / Nwind / sqrt(2); // sqrt(2): действующее значение гармоники, а не амплитудное
+    auto real = 2 * sum_ / Nwind / sqrt(2); // sqrt(2): действующее значение гармоники, а не амплитудное
     sum_ = 0.0; // мнимая часть
     for (int n = 0; n < Nwind; n++)
       sum_ += Yind[n] * cos_[n];
-    OutImag[m] = 2 * sum_ / Nwind / sqrt(2); // действующее значение гармоники, а не амплитудное
+    auto imag = 2 * sum_ / Nwind / sqrt(2); // действующее значение гармоники, а не амплитудное
+    Out[m] = complex<double>(real, imag);
   }
   delete[] Yind;
   delete[] sin_;
   delete[] cos_;
-  return 0;
+  return Out;
 }

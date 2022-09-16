@@ -10,7 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
-#include <complex.h>
+#include <complex>
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
@@ -29,21 +29,12 @@ char FMT_MATLAB[] =
 
 double *MeanCount(vector<double>&, int);
 double *RMSCount(vector<double>&, int);
-int Fourier(vector<double>&, int Nwind, double *OutReal, double *OutImag, int Nharm);
+complex<double> *Fourier(vector<double>&, int Nwind, int Nharm);
 
 int main(int argc, char *argv[]) {
-  int leng = 1e6;
   istream *infile_ptr;
   ifstream infile;
   vector<double> Samples;
-  double *OutReal1 = new double[leng];
-  double *OutImag1 = new double[leng];
-  double *OutReal2 = new double[leng];
-  double *OutImag2 = new double[leng];
-  double *OutReal3 = new double[leng];
-  double *OutImag3 = new double[leng];
-  double *OutReal5 = new double[leng];
-  double *OutImag5 = new double[leng];
   string s = "";
   int countS = 0;
   int NstrLen = 0;
@@ -77,18 +68,18 @@ int main(int argc, char *argv[]) {
   // 03. Расчёт действующего значения
   auto OutRMS = RMSCount(Samples, Nwind);
   // 04. Фильтр Фурье
-  out = Fourier(Samples, Nwind, OutReal1, OutImag1, 1);
-  out = Fourier(Samples, Nwind, OutReal2, OutImag2, 2);
-  out = Fourier(Samples, Nwind, OutReal3, OutImag3, 3);
-  out = Fourier(Samples, Nwind, OutReal5, OutImag5, 5);
+  auto OutSFT1 = Fourier(Samples, Nwind, 1);
+  auto OutSFT2 = Fourier(Samples, Nwind, 2);
+  auto OutSFT3 = Fourier(Samples, Nwind, 3);
+  auto OutSFT5 = Fourier(Samples, Nwind, 5);
 
   printf("%s", HEAD_MATLAB);
   for (int n = 0; n < countS; n++)
-    printf(FMT_MATLAB, n + 1, -500.0 + n * dt, Samples[n], OutMean[n],
-           OutRMS[n], cabs(OutReal1[n] + OutImag1[n] * I),
-           carg(OutReal1[n] + OutImag1[n] * I) * 180.0 / PI,
-           cabs(OutReal2[n] + OutImag2[n] * I),
-           cabs(OutReal3[n] + OutImag3[n] * I),
-           cabs(OutReal5[n] + OutImag5[n] * I));
+    printf(FMT_MATLAB, n + 1, -500.0 + n * dt, Samples[n], OutMean[n], OutRMS[n],
+        abs(OutSFT1[n]),
+        arg(OutSFT1[n]) * 180.0 / PI,
+        abs(OutSFT2[n]),
+        abs(OutSFT3[n]),
+        abs(OutSFT5[n]));
   return 0;
 }
