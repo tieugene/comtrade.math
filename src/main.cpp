@@ -1,3 +1,11 @@
+/* TODO:
+ * - [x] return new
+ * - [ ] Sample: vector
+ * - [ ] double > float
+ * - [ ] SFT: complex
+ * - [ ] stdin|argv[1]
+ * - [ ] unify functions (wrap)
+ */
 #include <algorithm>
 #include <cmath>
 #include <complex.h>
@@ -13,20 +21,17 @@
 using namespace std;
 #define PI numbers::pi
 char HEAD_MATLAB[] =
-    "         n   time, ms     sample       mean        RMS    H1, abs         "
-    "     H1, deg              H2, abs    H3, abs    H5, abs\n";
+    "         n   time, ms     sample       mean        RMS    H1, abs              H1, deg              H2, abs    H3, abs    H5, abs\n";
 char FMT_MATLAB[] =
     "%10d %10.4f %10.4f %10.4f %10.4f %10.4f %20.4f %20.4f %10.4f %10.4f\n";
 
-int MeanCount(double *Samples, int Nwind, int Len, double *Out);
-int RMSCount(double *Samples, int Nwind, int Len, double *Out);
+double *MeanCount(double*, int, int);
+double *RMSCount(double*, int, int);
 int Fourier(double *Samples, int Nwind, int Len, double *OutReal, double *OutImag, int Nharm);
 
 int main() {
   int leng = 1e6;
   double *Samples = new double[leng];
-  double *OutMean = new double[leng];
-  double *OutRMS = new double[leng];
   double *OutReal1 = new double[leng];
   double *OutImag1 = new double[leng];
   double *OutReal2 = new double[leng];
@@ -50,11 +55,10 @@ int main() {
     countS++;
   }
   file.close();
-
   // 02. Расчет среднего значения
-  out = MeanCount(Samples, Nwind, countS, OutMean);
+  double *OutMean = MeanCount(Samples, Nwind, countS);
   // 03. Расчёт действующего значения
-  out = RMSCount(Samples, Nwind, countS, OutRMS);
+  double *OutRMS = RMSCount(Samples, Nwind, countS);
   // 04. Фильтр Фурье
   out = Fourier(Samples, Nwind, countS, OutReal1, OutImag1, 1);
   out = Fourier(Samples, Nwind, countS, OutReal2, OutImag2, 2);

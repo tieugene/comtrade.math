@@ -1,6 +1,6 @@
 #include <cmath>
 
-int RMSCount(double *Samples, int Nwind, int Len, double *Out) {
+double *RMSCount(double *Samples, int Nwind, int Len) {
   /// INPUT:
   // Samples - указатель на входной массив отсчётов входного сигнала;
   // Nwind - длина окна наблюдения
@@ -12,6 +12,7 @@ int RMSCount(double *Samples, int Nwind, int Len, double *Out) {
   int indStartWind = 0; // индекс первого отсчёта, который нужно заполнять в окне наблюдения
   double sum_ = 0.0; // урна
 
+  double *Out = new double[Len];
   for (int m = 0; m < Len; m++) // для каждого отсчёта в исходном сигнале заполняем окно
   {
     indStart = m - (Nwind - 1); // индекс первого (левого) отсчёта в исходном сигнале, который нужно записать в окно наблюдения
@@ -42,5 +43,5 @@ int RMSCount(double *Samples, int Nwind, int Len, double *Out) {
   }
 
   delete[] Yind;
-  return 0;
+  return Out;
 }
