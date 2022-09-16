@@ -19,20 +19,17 @@ double *MeanCount(std::vector<double> &Samples, int Nwind) {
     indStart = m - (Nwind - 1); // индекс первого (левого) отсчёта в исходном сигнале, который нужно записать в окно наблюдения
     if (indStart < 0) // если текущий отсчёт m не вышел за Nwind отсчётов, то надо начинать с нулевого отсчёта
       indStart = 0;
-
     // число заполненных ненулевых отсчётов в окне
     if (m < Nwind - 1) // если окно ещё не заполнилось полностью
-    {
       Nsamp = m + 1;
-    } else
+    else
       Nsamp = Nwind;
     // индекс первого ненулевого элемента в окне (окно заполняется с конца)
     indStartWind = Nwind - Nsamp;
-    for (int n = 0; n < Nwind; n++)
-      Yind[n] = 0.0; // обнуление элементов в окне
-    for (int n = 0; n < Nsamp; n++)
-      Yind[indStartWind + n] =
-          Samples[indStart + n]; // копирование отсчётов из сигнала в окно наблюдения
+    for (int n = 0; n < Nwind; n++) // обнуление элементов в окне
+      Yind[n] = 0.0;
+    for (int n = 0; n < Nsamp; n++) // копирование отсчётов из сигнала в окно наблюдения
+      Yind[indStartWind + n] = Samples[indStart + n];
     // расчёт (среднего значения)
     sum_ = 0.0;
     for (int n = 0; n < Nwind; n++)
