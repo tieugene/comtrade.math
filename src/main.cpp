@@ -4,6 +4,7 @@
  * - [x] ~~double > float~~
  * - [x] stdin|argv[1]
  * - [x] SFT: complex
+ * - [ ] queue
  * - [ ] unify functions (wrap)
  * - [ ] FIXME: handle 'not argv[1] nor stdin'
  */
@@ -14,7 +15,8 @@
 #include <iostream>
 
 using namespace std;
-#define PI numbers::pi
+const double dt = 1000. / 1200;  // samples time step
+const int Nwind = 24; // samples per period
 char HEAD_MATLAB[] =
     "         n   time, ms     sample       mean        RMS    H1, abs              H1, deg              H2, abs    H3, abs    H5, abs\n";
 char FMT_MATLAB[] =
@@ -22,7 +24,7 @@ char FMT_MATLAB[] =
 
 double *MeanCount(vector<double>&, int);
 double *RMSCount(vector<double>&, int);
-complex<double> *Fourier(vector<double>&, int Nwind, int Nharm);
+complex<double> *Fourier(vector<double>&, int, int);
 
 int main(int argc, char *argv[]) {
   istream *infile_ptr;
@@ -30,11 +32,6 @@ int main(int argc, char *argv[]) {
   vector<double> Samples;
   string s = "";
   int countS = 0;
-  int NstrLen = 0;
-  double Samp = 0.0;
-  int out = 0;
-  double dt = 1000. / 1200;
-  int Nwind = 24; // samples per period
 
   // 00. Prepare input
   if (argc < 2)
@@ -48,10 +45,8 @@ int main(int argc, char *argv[]) {
       infile_ptr = &infile;
   }
   // 01. Read samples
-  while (!getline(*infile_ptr, s).eof()) {
+  for (countS=0; !getline(*infile_ptr, s).eof(); countS++)
     Samples.push_back(atof(s.c_str()));
-    countS++;
-  }
   if (!countS) {
       cerr << "No input data" << endl;
       exit(EXIT_FAILURE);
@@ -68,7 +63,7 @@ int main(int argc, char *argv[]) {
   for (int n = 0; n < countS; n++)
     printf(FMT_MATLAB, n + 1, -500.0 + n * dt, Samples[n], OutMean[n], OutRMS[n],
         abs(OutSFT1[n]),
-        arg(OutSFT1[n]) * 180.0 / PI,
+        arg(OutSFT1[n]) * 180.0 / numbers::pi,
         abs(OutSFT2[n]),
         abs(OutSFT3[n]),
         abs(OutSFT5[n]));

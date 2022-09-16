@@ -3,18 +3,12 @@
 #include <vector>
 #include <complex>
 
-using namespace std;
-#define PI numbers::pi
-
-/// Расчёт ортогональных составляющих. Примечание: определяется фаза синусоиды
-/// входного сигнала (а не косинусоиды)
-complex<double> *Fourier(vector<double> &Samples, int Nwind, int Nharm) {
+/// Расчёт ортогональных составляющих.
+/// Примечание: определяется фаза синусоиды входного сигнала (а не косинусоиды)
+std::complex<double> *Fourier(std::vector<double> &Samples, int Nwind, int Nharm) {
   /// INPUT:
   // Samples - указатель на входной массив отсчётов входного сигнала;
   // Nwind - длина окна наблюдения
-  // Len - длина входного массива
-  // OutReal - указатель на выходной массив реальной части
-  // OutImag - указатель на выходной массив мнимой части
   // Nharm - номер расчитываемой гармоники
 
   double *Yind = new double[Nwind]; // массив для хранения отсчётов в окне наблюдения
@@ -26,7 +20,7 @@ complex<double> *Fourier(vector<double> &Samples, int Nwind, int Nharm) {
   double sum_ = 0.0; // урна
 
   auto Len = Samples.size();
-  complex<double> *Out = new complex<double>[Len];
+  auto Out = new std::complex<double>[Len];
   for (int m = 0; m < Len; m++) // для каждого отсчёта в исходном сигнале заполняем окно
   {
     indStart = m - (Nwind - 1); // индекс первого (левого) отсчёта в исходном сигнале, который нужно записать в окно наблюдения
@@ -47,7 +41,7 @@ complex<double> *Fourier(vector<double> &Samples, int Nwind, int Nharm) {
     for (int n = 0; n < Nwind; n++)
       sin_[n] = cos_[n] = 0.0;
     for (int n = 0; n < Nwind; n++) {
-      auto arg = 2 * PI * Nharm * (m + 1 + n) / Nwind;
+      auto arg = 2 * std::numbers::pi * Nharm * (m + 1 + n) / Nwind;
       sin_[n] = sin(arg); // для реальной части (определяем фазу синусоиды, а не косинусоиды)
       cos_[n] = cos(arg); // для мнимой: если бы определяли фазу косинусоиды, то было бы наоборот
     }
@@ -59,7 +53,7 @@ complex<double> *Fourier(vector<double> &Samples, int Nwind, int Nharm) {
     for (int n = 0; n < Nwind; n++)
       sum_ += Yind[n] * cos_[n];
     auto imag = 2 * sum_ / Nwind / sqrt(2); // действующее значение гармоники, а не амплитудное
-    Out[m] = complex<double>(real, imag);
+    Out[m] = std::complex<double>(real, imag);
   }
   delete[] Yind;
   delete[] sin_;
